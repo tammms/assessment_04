@@ -46,4 +46,6 @@ public class ProductController {
 
     return ResponseEntity.ok(Json.createArrayBuilder(products).build().toString());
   }
+
+  
 }

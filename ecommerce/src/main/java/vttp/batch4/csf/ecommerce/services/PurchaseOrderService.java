@@ -4,6 +4,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import vttp.batch4.csf.ecommerce.models.Order;
+import vttp.batch4.csf.ecommerce.repositories.InputException;
 import vttp.batch4.csf.ecommerce.repositories.PurchaseOrderRepository;
 
 @Service
@@ -16,7 +17,14 @@ public class PurchaseOrderService {
   // If this method is changed, any assessment task relying on this method will
   // not be marked
   // You may only add Exception to the method's signature
-  public void createNewPurchaseOrder(Order order) {
+  public void createNewPurchaseOrder(Order order) throws InputException {
     // TODO Task 3
+    
+    try {
+      poRepo.create(order);
+    } catch (InputException ex) {
+      System.out.println("----- exception occured");
+      throw ex;
+    }
   }
 }

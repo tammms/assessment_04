@@ -2,14 +2,16 @@ import { Component, OnDestroy, OnInit, inject, input } from '@angular/core';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { Cart, LineItem, Order } from '../models';
 import { CartStore } from '../cart.store';
-import { Observable, Subscription, lastValueFrom, reduce } from 'rxjs';
+import { Observable, Subscription, last, lastValueFrom, reduce } from 'rxjs';
+import { ProductService } from '../product.service';
+import { Router } from '@angular/router';
 
 @Component({
   selector: 'app-confirm-checkout',
   templateUrl: './confirm-checkout.component.html',
   styleUrl: './confirm-checkout.component.css'
 })
-export class ConfirmCheckoutComponent implements OnInit, OnDestroy{
+export class ConfirmCheckoutComponent implements OnInit{
 
   // TODO Task 3
 
@@ -17,11 +19,13 @@ export class ConfirmCheckoutComponent implements OnInit, OnDestroy{
   detailsForm!: FormGroup
 
   private cartStore = inject(CartStore)
+  private productSvc = inject (ProductService)
 
   sub! :Subscription
+  private router = inject(Router)
 
   cart$!: Observable<LineItem[]>
-  cart! : Cart
+  cart : Cart = {lineItems: []}
   totalQuantity: number = 0
 
   ngOnInit(): void {
@@ -32,28 +36,26 @@ export class ConfirmCheckoutComponent implements OnInit, OnDestroy{
 
       this.sub= this.cartStore.getProducts.subscribe(
         (value)=>{
-          this.cart.lineItems = value
+          value.map(v => this.cart.lineItems.push(v))
         }
       )
-      
 
-      lastValueFrom(this.cart$)
-      .then(value =>{ 
-        // console.info( "Value: " ,value)
-        value.map(v=>{
-         let total = v.price*v.quantity
-           total += this.totalQuantity})
-          console.info("Total quantity: ", this.totalQuantity)
-      })
+
+    
+      // lastValueFrom(this.cart$)
+      // .then(value =>{ 
+      //   // console.info( "Value: " ,value)
+      //   value.map(v=>{
+      //    let total = v.price*v.quantity
+      //      total += this.totalQuantity})
+      //     console.info("Total quantity: ", this.totalQuantity)
+      // })
         // .then(value => {
         //   console.info("Price * quantity: ",value)
         // })
                 
   }
 
-  ngOnDestroy(): void {
-      this.sub.unsubscribe
-  }
 
   createDetailsForm():FormGroup{
     return this.fb.group({
@@ -78,7 +80,9 @@ export class ConfirmCheckoutComponent implements OnInit, OnDestroy{
       comments: inputOrder['comments'],
       cart: this.cart
     }
-
+    this.productSvc.checkout(order)
+    this.detailsForm.reset()
+    this.router.navigate(['/'])
 
   }
 
