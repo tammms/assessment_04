@@ -80,9 +80,13 @@ export class ConfirmCheckoutComponent implements OnInit{
       comments: inputOrder['comments'],
       cart: this.cart
     }
+
     this.productSvc.checkout(order)
-    this.detailsForm.reset()
-    this.router.navigate(['/'])
+                    .then(() =>{console.info("Success")})
+                    .catch(err => {alert("Error") })
+                    .then(()=>{ this.router.navigate(['/'])
+                            this.detailsForm.reset()
+                  })
 
   }
 

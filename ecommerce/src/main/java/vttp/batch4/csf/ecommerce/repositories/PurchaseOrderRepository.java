@@ -23,16 +23,17 @@ public class PurchaseOrderRepository {
   // private int quantity;
   // private float price;
 
+  
+
   public static final String CREATE_NEW_PURCHASE_ORDER = """
-    insert into purchase_order(order_id, date, name, address, priority, comments)
+    insert into purchase_order(orderId, date, name, address, priority, comments)
     values (?, ?, ?, ?, ?, ?)
-      """;
+    """;
 
   public static final String INSERT_LINE_ITEMS = """
-    insert into purchase_order(order_id, product_id, name, quantity, price)
+    insert into line_item(orderId, product_id, name, quantity, price)
     values (?, ?, ?, ?, ?)
-      
-      """;
+    """;
 
   // IMPORTANT: DO NOT MODIFY THIS METHOD.
   // If this method is changed, any assessment task relying on this method will
@@ -55,7 +56,7 @@ public class PurchaseOrderRepository {
                                         order.getName(),
                                         order.getAddress(),
                                         order.getPriority(),
-                                        order.getComments()) >0;
+                                        order.getComments()) >0;                                        
 
     
     for (LineItem li : itemList){
