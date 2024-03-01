@@ -33,6 +33,8 @@ public class ProductsRepository {
     return template.findDistinct(query, "Category", "products", String.class);
   }
 
+
+
   /*
    * db.products.find(
    *   { Category: { $regex: category, $options: 'i' }, }

@@ -1,6 +1,8 @@
 import { Component, Input, OnInit, Output, inject } from '@angular/core';
 import {FormBuilder, FormGroup, Validators} from '@angular/forms';
 import {LineItem} from '../models';
+import { CartStore } from '../cart.store';
+import { Observable, Subject, lastValueFrom } from 'rxjs';
 
 @Component({
   selector: 'app-order-form',
@@ -13,23 +15,48 @@ export class OrderFormComponent implements OnInit {
 
   private fb = inject(FormBuilder)
 
+  private cartStore = inject(CartStore)
+  lineItems$!: Observable<LineItem[]>
+  itemCount!: number
+
+  itemCountEvent = new Subject <number>()
+
   @Input({ required: true })
   productId!: string
+
+  @Input({ required: true })
+  productName!: string
+
+  @Input({ required: true })
+  productPrice!: number
+
 
   form!: FormGroup
 
   ngOnInit(): void {
     this.form = this.createForm()
+  
   }
 
   addToCart() {
+    // const lineItem: LineItem = {
+    //   prodId: this.productId,
+    //   quantity: this.form.value['quantity'],
+    //   name: '',
+    //   price: 0
+    // }
+
     const lineItem: LineItem = {
       prodId: this.productId,
       quantity: this.form.value['quantity'],
-      name: '',
-      price: 0
+      name: this.productName,
+      price: this.productPrice
     }
-
+    
+    this.cartStore.addProduct(lineItem)
+    this.cartStore.getProducts.subscribe()
+    lastValueFrom(this.cartStore.getItemCount)
+                .then(value =>{this.itemCount = value})
     this.form = this.createForm()
   }
 
